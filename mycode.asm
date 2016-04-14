@@ -9,8 +9,7 @@ INCLUDE 'emu8086.inc'
 menu db "Please select a choice:",13,10
      db "1. Deseneaza triunghi",13,10
      db "2. Deseneaza dreptunghi",13,10
-     db "3. Major",13,10
-     db "4. Exit",13,10,'$'
+     db "3. Exit",13,10,'$'
 
 .code
 start:
@@ -21,15 +20,19 @@ start:
 
   call clear_screen      
   call display_menu    
+  
+  call BEEP
 
 ;WAIT FOR ANY KEY.    
   mov  ah, 00h
   int  16h
- 
+  
   CMP al, 31h 
   je triunghi
   CMP al, 32h 
   je dreptunghi 
+  
+  call BEEP
   
 ;FINISH PROGRAM.
   mov  ax, 4c00h
@@ -52,16 +55,17 @@ clear_screen proc
 clear_screen endp 
 
 dreptunghi  PROC
-;jmp code
-w equ 10 ; dimensiune dreptunghi
-h equ 6
+    
+
+w equ 100 ; dimensiune dreptunghi
+h equ 60
  mov ah, 0
  mov al, 13h ; trecere in mod grafic 320x200
  int 10h
  ; afisare latura superioara
  mov cx, 100+w ; coloana
  mov dx, 20 ; rand
- mov al, 15 ; alb
+ mov al ,9 ; alb
 u1: mov ah, 0ch ; afisare pixel
  int 10h
  dec cx
@@ -70,7 +74,7 @@ u1: mov ah, 0ch ; afisare pixel
  ; afisare latura inferioare
  mov cx, 100+w
  mov dx, 20+h
- mov al, 15
+ mov al, 10
 u2: mov ah, 0ch
  int 10h
  dec cx
@@ -79,7 +83,7 @@ u2: mov ah, 0ch
  ; latura din stanga
  mov cx, 100
  mov dx, 20+h
- mov al, 15
+ mov al, 11
 u3: mov ah, 0ch
  int 10h
  dec dx
@@ -88,13 +92,14 @@ u3: mov ah, 0ch
  ; latura din dreapta
  mov cx, 100+w
  mov dx, 20+h
- mov al, 15 
+ mov al, 12 
 u4: mov ah, 0ch
  int 10h
  dec dx
  cmp dx, 20
  ja u4
- ; asteptare apasare tasta 
+ ; asteptare apasare tasta
+ call BEEP 
  PUTC 13
  PUTC 10
  PRINT "Press any key to continue..."
@@ -103,7 +108,7 @@ u4: mov ah, 0ch
  jmp start
  
  ret
-dreptunghi  ENDP  
+dreptunghi  ENDP      
 
 triunghi PROC
  mov ah, 0
@@ -112,7 +117,7 @@ triunghi PROC
  ; afisare latura superioara
  mov cx, 100 ; coloana
  mov dx, 100 ; rand
- mov al, 15 ; alb 
+ mov al, 4 ; rosu 
  uu1: mov ah, 0ch ; afisare pixel
  int 10h
  add cx, 2
@@ -127,7 +132,7 @@ triunghi PROC
  ; afisare latura inferioasa
  mov cx, 200
  mov dx, 100
- mov al, 35
+ mov al, 14 ; galben
  uu2: mov ah, 0ch
  int 10h
  dec cx
@@ -136,7 +141,7 @@ triunghi PROC
  ;latura din dreapta
  mov cx, 200
  mov dx, 100
- mov al, 1
+ mov al, 1; albastru
  uu3: mov ah, 0ch
  int 10h
  dec cx
@@ -148,7 +153,8 @@ triunghi PROC
  dec cx
  cmp dx, 14
  jae uu3
- ;asteptare apasare tasta
+ ;asteptare apasare tasta  
+ call BEEP
  PUTC 13
  PUTC 200
  PRINT "Press any key to continue..."
@@ -158,7 +164,14 @@ triunghi PROC
  
  ret
  
-triunghi ENDP
+triunghi ENDP     
+
+beep PROC        ;genereaza un beep
+    mov ah, 02
+    mov dl, 07h
+    int 21h
+    ret
+beep ENDP
 
 end start 
 
