@@ -7,8 +7,8 @@ INCLUDE 'emu8086.inc'
 .data
 
 menu db "Please select a choice:",13,10
-     db "1. Name",13,10
-     db "2. Age",13,10
+     db "1. Deseneaza triunghi",13,10
+     db "2. Deseneaza dreptunghi",13,10
      db "3. Major",13,10
      db "4. Exit",13,10,'$'
 
@@ -23,13 +23,13 @@ start:
   call display_menu    
 
 ;WAIT FOR ANY KEY.    
-  mov  ah, 7
-  int  21h
-  
- ; CMP ah, 1 ;if (DL>=0)  
- ; call dreptunghi ;jump to if09 , if true
-  CMP ah, 2 ;if (DL>=0)  
-  call triunghi ;jump to if09 , if true
+  mov  ah, 00h
+  int  16h
+ 
+  CMP al, 31h 
+  je triunghi
+  CMP al, 32h 
+  je dreptunghi 
   
 ;FINISH PROGRAM.
   mov  ax, 4c00h
@@ -115,13 +115,8 @@ triunghi PROC
  mov al, 15 ; alb 
  uu1: mov ah, 0ch ; afisare pixel
  int 10h
- ;add cx, 2
- ;sub dx, 3 
- inc cx
- inc cx
- dec dx
- dec dx
- dec dx
+ add cx, 2
+ sub dx, 3 
  cmp dx, 14
  mov ah, 0ch
  int 10h
@@ -166,6 +161,5 @@ triunghi PROC
 triunghi ENDP
 
 end start 
-
 
 
